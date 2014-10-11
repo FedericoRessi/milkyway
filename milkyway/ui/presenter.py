@@ -33,5 +33,14 @@ class Presenter(object):  # pylint: disable=too-few-public-methods
 
         assert view is not None
 
-        self._view = view
+        if model is None:
+            model = self.create_model()
+
         self._model = model
+        self._view = view
+
+    def create_model(self):
+        '''
+        Create a new model if not provided by the constructor.
+        '''
+        raise ValueError('Model is required.')

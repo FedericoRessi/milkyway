@@ -37,15 +37,45 @@ def model():
     return Mock()
 
 
-def test_constructor_with_view(view):
+class DummyPresenter(Presenter):
+
+    '''
+    Dummy presenter implementation
+    '''
+
+    def __init__(self, *args, **kwargs):
+        self.create_model = Mock()
+        super(DummyPresenter, self).__init__(*args, **kwargs)
+
+
+def test_constructor_with_create_model(view):
     '''
     Test base presenter constructor with a view
     '''
 
-    presenter = Presenter(view=view)
+    presenter = DummyPresenter(view=view)
 
+    presenter.create_model.assert_called_once_with()
     assert presenter._view is view
-    assert presenter._model is None
+    assert presenter._model is presenter.create_model()
+
+
+def test_constructor_without_model(view):
+    '''
+    Test base presenter constructor with a view
+    '''
+
+    with raises(ValueError):
+        Presenter(view=view)
+
+
+def test_constructor_without_view():
+    '''
+    Test base presenter constructor without a view
+    '''
+
+    with raises(AssertionError):
+        DummyPresenter(view=None)
 
 
 def test_constructor_with_view_and_model(view, model):
@@ -57,12 +87,3 @@ def test_constructor_with_view_and_model(view, model):
 
     assert presenter._view is view
     assert presenter._model is model
-
-
-def test_constructor_without_view():
-    '''
-    Test base presenter constructor without a view
-    '''
-
-    with raises(AssertionError):
-        Presenter(view=None)
