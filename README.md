@@ -3,6 +3,7 @@ Milky Way
 
 Turn based strategy game from Milky Way galaxy
 
+
 Overview
 --------
 
@@ -18,27 +19,53 @@ Download source code from [GitHub page](https://github.com/FedericoRessi/milkywa
 git clone https://github.com/FedericoRessi/milkyway.git 
 ```
 
+
 How to use
 ----------
 
 There is still nothing to use. Only Python meat for now. ;-)
 
 
-Run tests
+Writing tests
+-------------
+
+MilkWay project would adopt [behavior driven development](http://it.wikipedia.org/wiki/Behavior-driven_development) approach to enforce a top-down design and reduce defelop-test-review-fix cicles for integration funtional testing.
+To enforce writing behaviours before data models and views UI follows [model-view-presenter](http://en.wikipedia.org/wiki/Model%E2%80%93view%E2%80%93presenter) design pattern. 
+
+For details about using pytest please:
+
+- for writing functional tests see [pytest-bdd documentation](https://github.com/olegpidsadnyi/pytest-bdd)
+- for creating test fixtures see [pytest documentation](http://pytest.org/latest/fixture.html)
+- for mocking objects see [mocking library](http://www.voidspace.org.uk/python/mock/)
+
+
+Executing tests
 ---------
 
 To run tests python2.7 and [Tox](http://tox.readthedocs.org/en/latest/install.html) are required.
+Tox should download from internet required python packages.
+If some error is reported by Tox (red messages), it must be corrected before the change reaches master branch.
 
-From project root folder type following command:
+**Execute static analisys**
+
+Statick analisys is perfomed using
+- [flake8](http://flake8.readthedocs.org/en/2.2.3/)
+- [pylint](http://www.pylint.org/)
+
+```bash
+tox -e static
+```
+
+**Executing all tests and code coverage**
+
+Test execution and code coverage is produced using [pytest](http://pytest.org/latest/)
+
+```bash
+tox -e py27
+```
+
+**Executing all above**
 
 ```bash
 tox
 ```
-
-Tox does:
-
-- execute all tests using [PyTest](http://pytest.org/latest/)
-- execute code coverage
-- execute static analisys (flake8 and pylint)
-
-If some error is reported by Tox, it must be corrected before the change reaches master branch.
