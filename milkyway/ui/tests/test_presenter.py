@@ -4,28 +4,65 @@
 # URL:        https://github.com/FedericoRessi/milkyway/
 # License:    GPL3
 #
-# Created:    Oct 11, 2014
-# Modified:   __updated__
+# pylint: disable=protected-access,redefined-outer-name,invalid-name
 # -----------------------------------------------------------------------------
 
 '''
 Test module for milkyway package.
 
-@author: federico
+@author: Federico Ressi
 '''
 
-from __future__ import division
-
-import mock
+from mock import Mock
+from pytest import fixture, raises  # pylint: disable=no-name-in-module
 
 from milkyway.ui.presenter import Presenter
 
 
-def test_constructor():
-    view = mock.Mock()
-    model = mock.Mock()
+@fixture
+def view():
+    '''
+    Any view
+    '''
 
-    presenter = Presenter(view, model)
+    return Mock()
 
-    assert view is presenter._view
-    assert model is presenter._model
+
+@fixture
+def model():
+    '''
+    Any model
+    '''
+
+    return Mock()
+
+
+def test_constructor_with_view(view):
+    '''
+    Test base presenter constructor with a view
+    '''
+
+    presenter = Presenter(view=view)
+
+    assert presenter._view is view
+    assert presenter._model is None
+
+
+def test_constructor_with_view_and_model(view, model):
+    '''
+    Test base presenter constructor with a view and a model
+    '''
+
+    presenter = Presenter(view=view, model=model)
+
+    assert presenter._view is view
+    assert presenter._model is model
+
+
+def test_constructor_without_view():
+    '''
+    Test base presenter constructor without a view
+    '''
+
+    with raises(AssertionError):
+        Presenter(view=None)

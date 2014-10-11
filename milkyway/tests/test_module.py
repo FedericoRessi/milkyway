@@ -4,30 +4,32 @@
 # URL:        https://github.com/FedericoRessi/milkyway/
 # License:    GPL3
 #
-# Created:    Oct 11, 2014
-# Modified:   __updated__
+# pylint: disable=protected-access,redefined-outer-name
 # -----------------------------------------------------------------------------
 
 '''
-Test module for milkyway package.
+Test milkyway package.
 
 @author: Federico Ressi
 '''
 
-from __future__ import division
-
-import logging
-
-import milkyway
+from pytest import fixture  # pylint: disable=no-name-in-module
 
 
-logger = logging.getLogger(__name__)
+@fixture
+def module():
+    '''
+    Milkway module
+    '''
+
+    import milkyway
+    return milkyway
 
 
-def test_version_format():
+def test_version_format(module):
     'Package version has following format: A.B.C'
 
-    version = milkyway.__version__.split('.')
+    version = module.__version__.split('.')
     assert len(version) == 3
     for num in version:
         assert num >= 0

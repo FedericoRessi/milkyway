@@ -3,9 +3,6 @@
 #
 # URL:        https://github.com/FedericoRessi/milkyway/
 # License:    GPL3
-#
-# Created:    Oct 11, 2014
-# Modified:   __updated__
 # -----------------------------------------------------------------------------
 
 '''
@@ -13,15 +10,13 @@
 @author: Federico Ressi
 '''
 
-from __future__ import division
-
 import logging
 
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger(__name__)  # pylint: disable=invalid-name
 
 
-class Presenter(object):
+class Presenter(object):  # pylint: disable=too-few-public-methods
 
     '''
     Base class for all presenters

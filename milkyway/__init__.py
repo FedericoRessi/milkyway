@@ -3,9 +3,6 @@
 #
 # URL:        https://github.com/FedericoRessi/milkyway/
 # License:    GPL3
-#
-# Created:    Oct 11, 2014
-# Modified:   Oct 11, 2014
 # -----------------------------------------------------------------------------
 
 '''
