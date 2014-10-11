@@ -18,10 +18,10 @@ Download source code from [GitHub page](https://github.com/FedericoRessi/milkywa
 git clone https://github.com/FedericoRessi/milkyway.git 
 ```
 
-Execute
----
+How to use
+----------
 
-There is still nothing to use. ;-)
+There is still nothing to use. Only Python meat for now. ;-)
 
 
 Run tests
@@ -34,3 +34,11 @@ From project root folder type following command:
 ```bash
 tox
 ```
+
+Tox does:
+
+- execute all tests using [PyTest](http://pytest.org/latest/)
+- execute code coverage
+- execute static analisys (flake8 and pylint)
+
+If some error is reported by Tox, it must be corrected before the change reaches master branch.
