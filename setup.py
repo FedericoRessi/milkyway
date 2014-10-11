@@ -5,9 +5,8 @@ Created on Oct 11, 2014
 '''
 
 import os
-from setuptools import setup
+from setuptools import setup, find_packages
 from setuptools.command.test import test as TestCommand
-import sys
 
 import milkyway
 
@@ -15,8 +14,17 @@ import milkyway
 URL = "https://github.com/FedericoRessi/milkyway"
 
 
-class Tox(TestCommand):
+class Tox(TestCommand):  # pylint: disable=too-many-public-methods
+
+    '''
+    Command to be used for python setup.py test
+    '''
+
     user_options = [('tox-args=', 'a', "Arguments to pass to tox")]
+
+    tox_args = None
+    test_args = None
+    test_suite = False
 
     def initialize_options(self):
         TestCommand.initialize_options(self)
@@ -31,17 +39,16 @@ class Tox(TestCommand):
         # import here, cause outside the eggs aren't loaded
         import tox
         import shlex
-        errno = tox.cmdline(args=shlex.split(self.tox_args))
-        sys.exit(errno)
-
-# Utility function to read the README file.
-# Used for the long_description.  It's nice, because now 1) we have a top level
-# README file and 2) it's easier to type in the README file than to put a raw
-# string in below ...
+        tox.cmdline(args=shlex.split(self.tox_args))
 
 
-def read(fname):
-    return open(os.path.join(os.path.dirname(__file__), fname)).read()
+def read(filename):
+    '''
+    Reads a text file
+    '''
+
+    return open(os.path.join(os.path.dirname(__file__), filename)).read()
+
 
 setup(
     name="milkyway",
@@ -54,8 +61,11 @@ setup(
     keywords="strategy game",
     url=URL,
     download_url=URL + "/archive/master.zip",
-    packages=['milkyway'],
-    long_description=read('README'),
+
+    # package content
+    packages=find_packages(),
+
+    long_description=read('README.md'),
     classifiers=[
         "Development Status :: 1 - Planning",
         "Topic :: Games",
@@ -63,6 +73,6 @@ setup(
     ],
     platforms = ["Windows", "Linux", "Mac OS-X"],
 
+    # TOX integration
     tests_require=['tox'],
-    cmdclass = {'test': Tox}
-)
+    cmdclass = {'test': Tox})
