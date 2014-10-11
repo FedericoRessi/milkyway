@@ -33,7 +33,7 @@ class View(object):
 
         # initialize presenter and model
         if presenter is None:
-            presenter = self.create_presenter()
+            presenter = self._create_presenter()
         self._presenter = presenter
 
         presenter.initialize()
@@ -44,7 +44,7 @@ class View(object):
         Setup view widgets
         '''
 
-    def create_presenter(self):
+    def _create_presenter(self):
         '''
         Creates a presenter for this view when it is not given.
         '''
@@ -85,12 +85,12 @@ class Presenter(object):  # pylint: disable=too-few-public-methods
         assert isinstance(view, View)
 
         if model is None:
-            model = self.create_model()
+            model = self._create_model()
 
         self._model = model
         self._view = view
 
-    def create_model(self):
+    def _create_model(self):
         '''
         Create a new model if not provided by the constructor.
         '''

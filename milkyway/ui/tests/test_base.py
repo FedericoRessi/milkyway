@@ -37,6 +37,15 @@ def model():
     return Mock(spec=Model)
 
 
+@fixture
+def presenter():
+    '''
+    Any model
+    '''
+
+    return Mock(spec=Presenter)
+
+
 class DummyPresenter(Presenter):
 
     '''
@@ -44,23 +53,23 @@ class DummyPresenter(Presenter):
     '''
 
     def __init__(self, *args, **kwargs):
-        self.create_model = Mock()
+        self._create_model = Mock(spec=Model)
         super(DummyPresenter, self).__init__(*args, **kwargs)
 
 
-def test_constructor_with_create_model(view):
+def test_create_presenter_with_create_model(view):
     '''
     Test base presenter constructor with a view
     '''
 
     presenter = DummyPresenter(view=view)
 
-    presenter.create_model.assert_called_once_with()
+    presenter._create_model.assert_called_once_with()
     assert presenter._view is view
-    assert presenter._model is presenter.create_model()
+    assert presenter._model is presenter._create_model()
 
 
-def test_constructor_without_model(view):
+def test_create_presenter_without_model(view):
     '''
     Test base presenter constructor with a view
     '''
@@ -87,3 +96,44 @@ def test_constructor_with_view_and_model(view, model):
 
     assert presenter._view is view
     assert presenter._model is model
+
+
+class DummyView(View):
+
+    '''
+    Dummy class for testing class View
+    '''
+
+    _initialized = False
+    _disposed = False
+
+    def __init__(self, presenter=None, create_presenter=None):
+        if create_presenter:
+            self._create_presenter = create_presenter
+        super(DummyView, self).__init__(presenter=presenter)
+
+    def _initialize_view(self):
+        assert not self._initialized
+        self._initialized = True
+
+    def _dispose_view(self):
+        assert not self._disposed
+        self._disposed = True
+
+
+def test_create_view_with_presenter(presenter):
+    view = DummyView(presenter=presenter)
+    assert view._presenter is presenter
+    view._presenter.initialize.assert_called_once_with()
+
+
+def test_create_view_creating_presenter():
+    create_presenter = Mock(return_value=Mock(spec=Presenter))
+    view = DummyView(create_presenter=create_presenter)
+    assert view._presenter is view._create_presenter()
+    view._presenter.initialize.assert_called_once_with()
+
+
+def test_create_view_without_presenter():
+    with raises(ValueError):
+        DummyView()
