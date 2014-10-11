@@ -52,3 +52,10 @@ docs/_build/
 
 # PyBuilder
 target/
+
+# Eclipse PyDev
+.settings/
+
+# Gedit backup files
+*~
+
