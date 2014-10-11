@@ -15,7 +15,8 @@ Test module for milkyway package.
 from mock import Mock
 from pytest import fixture  # pylint: disable=no-name-in-module
 
-from milkyway.ui.main_window import MainWindowPresenter
+from milkyway.ui.main_window import MainWindowModel, MainWindowPresenter,\
+    MainWindowView
 
 
 @fixture
@@ -24,7 +25,7 @@ def view():
     Any view
     '''
 
-    return Mock()
+    return Mock(spec=MainWindowView)
 
 
 @fixture
@@ -33,10 +34,10 @@ def model():
     Any model
     '''
 
-    return Mock()
+    return Mock(spec=MainWindowModel)
 
 
-def test_initialize(view, model):
+def test_initialize_presmter(view, model):
     ''''Test '''
 
     presenter = MainWindowPresenter(view, model)
