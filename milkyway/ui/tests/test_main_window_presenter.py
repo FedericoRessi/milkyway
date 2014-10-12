@@ -13,7 +13,7 @@ Test module for milkyway package.
 '''
 
 from mock import Mock
-from pytest import fixture  # pylint: disable=no-name-in-module
+from pytest import fixture, raises  # pylint: disable=no-name-in-module
 
 from milkyway.ui.main_window import MainWindowModel, MainWindowPresenter,\
     MainWindowView
@@ -56,6 +56,60 @@ def test_initialize_presenter(view, model):
     assert model.current_view == MainWindowModel.MAIN_MENU
     view.show_main_menu.assert_called_once_with(
         enabled_options={MainWindowModel.NEW_GAME, MainWindowModel.QUIT})
+
+
+def test_quit_clicked(view, model):
+    '''
+    Test behavior when quit button is clicked
+    '''
+
+    presenter = MainWindowPresenter(view, model)
+
+    presenter.quit_clicked()
+    assert not hasattr(presenter, '_view')
+    assert not hasattr(presenter, '_model')
+    view.dispose.assert_called_once_with()
+    model.dispose.assert_called_once_with()
+
+
+def test_continue_game_clicked(view, model):
+    '''
+    Test behavior when continue game button is clicked
+    '''
+
+    presenter = MainWindowPresenter(view, model)
+    with raises(NotImplementedError):
+        presenter.continue_game_clicked()
+
+
+def test_new_game_clicked(view, model):
+    '''
+    Test behavior when new game button is clicked
+    '''
+
+    presenter = MainWindowPresenter(view, model)
+    with raises(NotImplementedError):
+        presenter.new_game_clicked()
+
+
+def test_load_game_clicked(view, model):
+    '''
+    Test behavior when load game button is clicked
+    '''
+
+    presenter = MainWindowPresenter(view, model)
+    with raises(NotImplementedError):
+        presenter.load_game_clicked()
+
+
+def test_save_game_clicked(view, model):
+    '''
+    Test behavior when save game button is clicked
+    '''
+
+    presenter = MainWindowPresenter(view, model)
+    with raises(NotImplementedError):
+        presenter.save_game_clicked()
 
 
 class DummyMainWindowView(DummyView, MainWindowView):
