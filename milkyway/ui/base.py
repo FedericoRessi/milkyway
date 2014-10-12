@@ -136,6 +136,10 @@ class Presenter(object):  # pylint: disable=too-few-public-methods
         self._model = model
 
     def _create_model(self):
+        '''
+        Creates a model of class model_class
+        '''
+
         return self.model_class()
 
     def initialize(self):

@@ -74,16 +74,32 @@ class MainWindowPresenter(Presenter):
             enabled_options={MainWindowModel.NEW_GAME, MainWindowModel.QUIT})
 
     def continue_game_clicked(self):
+        '''
+        Continue game button clicked
+        '''
         raise NotImplementedError
 
     def new_game_clicked(self):
+        '''
+        New game button clicked
+        '''
         raise NotImplementedError
 
     def load_game_clicked(self):
+        '''
+        Load game button clicked
+        '''
         raise NotImplementedError
 
     def save_game_clicked(self):
+        '''
+        Save game button clicked
+        '''
         raise NotImplementedError
 
     def quit_clicked(self):
+        '''
+        Quit button clicked
+        '''
+
         self.dispose()

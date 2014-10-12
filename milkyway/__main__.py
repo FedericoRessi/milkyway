@@ -13,14 +13,20 @@
 import logging
 import sys
 
+from milkyway.pyside.application import Application
 
-logger = logging.getLogger(__name__)
+
+logger = logging.getLogger(__name__)  # pylint: disable=invalid-name
 
 
 def main(argv):
-    from milkyway.pyside.application import Application
+    '''
+    Executes Milky Way game
+    '''
+
     application = Application(argv)
     application.run()
+
 
 if __name__ == '__main__':
     main(sys.argv)

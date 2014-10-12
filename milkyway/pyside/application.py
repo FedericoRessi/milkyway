@@ -20,6 +20,10 @@ logger = logging.getLogger(__name__)  # pylint: disable=invalid-name
 
 class Application(object):
 
+    '''
+    Milky Way application class
+    '''
+
     _applicaiton = None
     _main_window = None
 
@@ -28,4 +32,7 @@ class Application(object):
         self._main_window = MainWindow()
 
     def run(self):
+        '''
+        Execute the application entering the event loop
+        '''
         self._applicaiton.exec_()
