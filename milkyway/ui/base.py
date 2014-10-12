@@ -45,19 +45,26 @@ class View(object):
 
     __metaclass__ = ABCMeta
 
-    def __init__(self, presenter=None):
+    def __init__(self, presenter=None, create_presenter=None):
 
         # initialize presenter and model
         if presenter is None:
-            # pylint: disable=assignment-from-no-return
-            presenter = self._create_presenter()
+
+            if create_presenter is None:
+                # pylint: disable=assignment-from-no-return
+                presenter = self._create_presenter()
+
+            else:
+                assert callable(create_presenter)
+                presenter = create_presenter()
+
+        assert isinstance(presenter, Presenter)
         self._presenter = presenter
 
         # initialize view
         self.initialize()
 
-    @staticmethod
-    def _create_presenter():
+    def _create_presenter(self):
         '''
         Creates a presenter for this view when it is not given.
         '''
@@ -124,10 +131,11 @@ class Presenter(object):  # pylint: disable=too-few-public-methods
         if model is None:
             model = self._create_model()
         assert isinstance(model, self.model_class),\
-            "{} is not an instance of {}".format(view, self.view_class)
+            "{} is not an instance of {}".format(model, self.model_class)
         self._model = model
 
-    _create_model = model_class
+    def _create_model(self):
+        return self.model_class()
 
     def initialize(self):
         '''

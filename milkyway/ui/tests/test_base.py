@@ -139,11 +139,6 @@ class DummyView(View):
     _initialized = False
     _disposed = False
 
-    def __init__(self, presenter=None, create_presenter=None):
-        if create_presenter:
-            self._create_presenter = create_presenter
-        super(DummyView, self).__init__(presenter=presenter)
-
     def _initialize_view(self):
         assert not self._initialized
         self._initialized = True
@@ -171,7 +166,7 @@ def test_create_view_creating_presenter():
 
     create_presenter = Mock(return_value=Mock(spec=Presenter))
     view = DummyView(create_presenter=create_presenter)
-    assert view._presenter is view._create_presenter()
+    assert view._presenter is create_presenter()
     assert view._initialized
     view._presenter.initialize.assert_called_once_with()
 
@@ -191,9 +186,8 @@ def test_dispose_view(presenter):
     '''
 
     view = DummyView(presenter=presenter)
-    view._dispose_view = Mock(spec=callable)
 
     view.dispose()
 
-    view._dispose_view.assert_called_once_with()
+    assert view._disposed
     assert not hasattr(view, '_presenter')

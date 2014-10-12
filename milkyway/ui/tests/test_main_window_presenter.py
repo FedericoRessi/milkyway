@@ -37,7 +37,16 @@ def model():
     return Mock(spec=MainWindowModel)
 
 
-def test_initialize_presmter(view, model):
+@fixture
+def presenter():
+    '''
+    Any model
+    '''
+
+    return Mock(spec=MainWindowPresenter)
+
+
+def test_initialize_presenter(view, model):
     ''''Test '''
 
     presenter = MainWindowPresenter(view, model)
@@ -46,3 +55,35 @@ def test_initialize_presmter(view, model):
     assert model.current_view == MainWindowModel.MAIN_MENU
     view.show_main_menu.assert_called_once_with(
         enabled_options={MainWindowModel.NEW_GAME, MainWindowModel.QUIT})
+
+
+class DummyMainWindowView(MainWindowView):
+
+    '''
+    Dummy class for testing MainWindowView
+    '''
+
+    initialized = False
+
+    disposed = False
+
+    main_menu_enabled_options = None
+
+    def _initialize_view(self):
+        self.initialized = True
+
+    def _dispose_view(self):
+        self.disposed = True
+
+    def show_main_menu(self, enabled_options):
+        self.main_menu_enabled_options = enabled_options
+
+
+def test_create_view_presenter():
+    ''''Test presenter creation by MainWindowView'''
+
+    view = DummyMainWindowView()
+    presenter = view._create_presenter()
+    assert isinstance(presenter, MainWindowPresenter)
+    assert presenter._view is view
+    assert isinstance(presenter._model, MainWindowModel)

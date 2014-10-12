@@ -41,7 +41,7 @@ class MainWindowView(View):
 
     __metaclass__ = ABCMeta
 
-    def create_presenter(self):
+    def _create_presenter(self):
         return MainWindowPresenter(self)
 
     @abstractmethod
