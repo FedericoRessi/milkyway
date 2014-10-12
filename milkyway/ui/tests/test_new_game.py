@@ -20,16 +20,26 @@ from milkyway.ui.new_game import NewGameModel, NewGameView, NewGamePresenter
 
 @fixture
 def model():
+    '''
+    Returns a mocked model
+    '''
     return Mock(spec=NewGameModel)
 
 
 @fixture
 def view():
+    '''
+    Returns a mocked view
+    '''
     return Mock(spec=NewGameView)
 
 
 @fixture
 def presenter():
+    '''
+    Returns a mocked presenter
+    '''
+
     return Mock(spec=NewGamePresenter)
 
 

@@ -88,6 +88,10 @@ class MainWindow(MainWindowView):
         del self._main_menu_buttons
 
     def show(self):
+        '''
+        Show the window
+        '''
+
         self.widget.show()
 
     def show_main_menu(self, enabled_options):

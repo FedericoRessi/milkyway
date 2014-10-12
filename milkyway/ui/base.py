@@ -37,7 +37,7 @@ class Model(object):
         '''
 
 
-class View(object):
+class View(object):  # pylint: disable=abstract-class-not-used
 
     '''
     Base class of all views
@@ -67,7 +67,7 @@ class View(object):
         # initialize view
         self.initialize()
 
-    def _create_presenter(self):
+    def _create_presenter(self):  # pylint: disable=no-self-use
         '''
         Creates a presenter for this view when it is not given.
         '''

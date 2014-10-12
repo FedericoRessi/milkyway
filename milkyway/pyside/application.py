@@ -39,6 +39,10 @@ class Application(object):
         self._applicaiton.exec_()
 
     def dispose(self):
+        '''
+        Dispose main window and application
+        '''
+
         self._main_window.dispose()
         del self._main_window
         del self._applicaiton
