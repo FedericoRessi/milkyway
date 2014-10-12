@@ -45,7 +45,10 @@ class View(object):
 
     __metaclass__ = ABCMeta
 
-    def __init__(self, presenter=None, create_presenter=None):
+    def __init__(self, parent=None, presenter=None, create_presenter=None):
+
+        assert parent is None or isinstance(parent, View)
+        self._parent = parent
 
         # initialize presenter and model
         if presenter is None:
@@ -75,12 +78,11 @@ class View(object):
         '''
         Initialize view, presenter and model
         '''
-        presenter = self._presenter
-        self._initialize_view(presenter)
-        presenter.initialize()
+        self._initialize_view()
+        self._presenter.initialize()
 
     @abstractmethod
-    def _initialize_view(self, presenter):
+    def _initialize_view(self):
         '''
         Setup view widgets
         '''

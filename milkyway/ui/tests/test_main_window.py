@@ -88,8 +88,11 @@ def test_new_game_clicked(view, model):
     '''
 
     presenter = MainWindowPresenter(view, model)
-    with raises(NotImplementedError):
-        presenter.new_game_clicked()
+
+    presenter.new_game_clicked()
+
+    assert model.current_view == MainWindowModel.NEW_GAME
+    view.show_new_game.assert_called_once_with()
 
 
 def test_load_game_clicked(view, model):
@@ -112,6 +115,29 @@ def test_save_game_clicked(view, model):
         presenter.save_game_clicked()
 
 
+def test_cancel_clicked(view, model):
+    '''
+    Test behavior when cancel panel button is clicked
+    '''
+
+    presenter = MainWindowPresenter(view, model)
+
+    presenter.cancel_clicked()
+
+    assert model.current_view == MainWindowModel.MAIN_MENU
+    view.show_main_menu.assert_called_once_with(
+        enabled_options={MainWindowModel.NEW_GAME, MainWindowModel.QUIT})
+
+
+def test_accepted_clicked(view, model):
+    '''
+    Test behavior when accept panel button is clicked
+    '''
+    presenter = MainWindowPresenter(view, model)
+    with raises(NotImplementedError):
+        presenter.accept_clicked()
+
+
 class DummyMainWindowView(DummyView, MainWindowView):
 
     '''
@@ -127,9 +153,12 @@ class DummyMainWindowView(DummyView, MainWindowView):
     def show_main_menu(self, enabled_options):
         self.main_menu_enabled_options = enabled_options
 
+    def show_new_game(self):
+        pass
+
 
 def test_create_view_presenter():
-    ''''Test presenter creation by MainWindowView'''
+    '''Test presenter creation by MainWindowView'''
 
     view = DummyMainWindowView()
     presenter = view._create_presenter()

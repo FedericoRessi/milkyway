@@ -29,10 +29,16 @@ class Application(object):
 
     def __init__(self, argv):
         self._applicaiton = QApplication(argv)
-        self._main_window = MainWindow()
+        self._main_window = window = MainWindow()
+        window.show()
 
     def run(self):
         '''
         Execute the application entering the event loop
         '''
         self._applicaiton.exec_()
+
+    def dispose(self):
+        self._main_window.dispose()
+        del self._main_window
+        del self._applicaiton

@@ -3,6 +3,7 @@
 #
 # URL:        https://github.com/FedericoRessi/milkyway/
 # License:    GPL3
+# pylint: disable=maybe-no-member,abstract-class-not-used
 # -----------------------------------------------------------------------------
 '''
 Main window presente, module and view
@@ -15,7 +16,6 @@ from abc import ABCMeta, abstractmethod
 import logging
 
 from milkyway.ui.base import View, Presenter, Model
-
 
 logger = logging.getLogger(__name__)  # pylint: disable=invalid-name
 
@@ -53,6 +53,12 @@ class MainWindowView(View):
         Show main menu
         '''
 
+    @abstractmethod
+    def show_new_game(self):
+        '''
+        Show main menu
+        '''
+
 
 class MainWindowPresenter(Presenter):
 
@@ -63,6 +69,8 @@ class MainWindowPresenter(Presenter):
     model_class = MainWindowModel
 
     view_class = MainWindowView
+
+    current_presenter = None
 
     def _initialize_presenter(self):
         '''
@@ -83,7 +91,8 @@ class MainWindowPresenter(Presenter):
         '''
         New game button clicked
         '''
-        raise NotImplementedError
+        self._model.current_view = MainWindowModel.NEW_GAME
+        self._view.show_new_game()
 
     def load_game_clicked(self):
         '''
@@ -103,3 +112,17 @@ class MainWindowPresenter(Presenter):
         '''
 
         self.dispose()
+
+    def cancel_clicked(self):
+        '''
+        Cancel panel button clicked
+        '''
+        self._model.current_view = MainWindowModel.MAIN_MENU
+        self._view.show_main_menu(
+            enabled_options={MainWindowModel.NEW_GAME, MainWindowModel.QUIT})
+
+    def accept_clicked(self):
+        '''
+        Accept panel button clicked
+        '''
+        raise NotImplementedError

@@ -4,7 +4,6 @@
 # URL:        https://github.com/FedericoRessi/milkyway/
 # License:    GPL3
 # -----------------------------------------------------------------------------
-
 '''
 
 @author: Federico Ressi
@@ -15,9 +14,8 @@ from PySide.QtGui import QWidget, QHBoxLayout, QStackedLayout, QVBoxLayout,\
 import logging
 
 import milkyway
+from milkyway.pyside.new_game import NewGamePanel
 from milkyway.ui.main_window import MainWindowView, MainWindowModel
-
-
 logger = logging.getLogger(__name__)  # pylint: disable=invalid-name
 
 
@@ -27,17 +25,19 @@ class MainWindow(MainWindowView):
     Main window view
     '''
 
-    _window = None
-    _window_layout = None
+    widget = None
+    _layout = None
 
     _main_menu = None
     _main_menu_buttons = None
 
-    def _initialize_view(self, presenter):
-        self._window = window = QWidget()
+    def _initialize_view(self):
+        presenter = self._presenter
+
+        self.widget = window = QWidget()
         window.setWindowTitle(milkyway.LEMMA)
 
-        self._window_layout = window_layout = QStackedLayout()
+        self._layout = window_layout = QStackedLayout()
         window.setLayout(window_layout)
 
         self._main_menu = main_menu = QWidget(window)
@@ -81,15 +81,26 @@ class MainWindow(MainWindowView):
         main_menu_layout.addStretch()
 
     def _dispose_view(self):
-        self._window.close()
-        del self._window
-        del self._window_layout
+        self.widget.close()
+        del self.widget
+        del self._layout
         del self._main_menu
         del self._main_menu_buttons
+
+    def show(self):
+        self.widget.show()
 
     def show_main_menu(self, enabled_options):
 
         for option, button in self._main_menu_buttons.iteritems():
             button.setEnabled(option in enabled_options)
 
-        self._window.show()
+        self._layout.setCurrentWidget(self._main_menu)
+
+    def show_new_game(self):
+        panel = NewGamePanel(parent=self)
+        self._layout.addWidget(panel.widget)
+        presenter = self._presenter
+        panel.cancel.clicked.connect(presenter.cancel_clicked)
+        panel.accept.clicked.connect(presenter.accept_clicked)
+        self._layout.setCurrentWidget(panel.widget)

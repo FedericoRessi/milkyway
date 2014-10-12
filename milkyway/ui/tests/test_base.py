@@ -139,7 +139,7 @@ class DummyView(View):
     initialized = False
     disposed = False
 
-    def _initialize_view(self, presenter):
+    def _initialize_view(self):
         assert not self.initialized
         self.initialized = True
 
