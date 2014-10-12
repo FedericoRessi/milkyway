@@ -20,27 +20,6 @@ from milkyway.ui.base import View, Presenter, Model
 logger = logging.getLogger(__name__)  # pylint: disable=invalid-name
 
 
-class MainWindowPresenter(Presenter):
-
-    '''
-    Presenter for the main game window
-    '''
-
-    def create_model(self):
-        return MainWindowModel()
-
-    def initialize(self):
-        '''
-        Called by my window to reach initial state
-        '''
-
-        assert isinstance(self._view, MainWindowView)
-
-        self._model.current_view = self._model.MAIN_MENU
-        self._view.show_main_menu(
-            enabled_options={self._model.NEW_GAME, self._model.QUIT})
-
-
 class MainWindowModel(Model):
 
     '''
@@ -70,3 +49,23 @@ class MainWindowView(View):
         '''
         Show main menu
         '''
+
+
+class MainWindowPresenter(Presenter):
+
+    '''
+    Presenter for the main game window
+    '''
+
+    model_class = MainWindowModel
+
+    view_class = MainWindowView
+
+    def _initialize_presenter(self):
+        '''
+        Called by my window to reach initial state
+        '''
+
+        self._model.current_view = MainWindowModel.MAIN_MENU
+        self._view.show_main_menu(
+            enabled_options={MainWindowModel.NEW_GAME, MainWindowModel.QUIT})

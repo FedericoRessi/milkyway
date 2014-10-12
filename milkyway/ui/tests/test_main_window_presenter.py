@@ -43,6 +43,6 @@ def test_initialize_presmter(view, model):
     presenter = MainWindowPresenter(view, model)
     presenter.initialize()
 
-    assert model.current_view == model.MAIN_MENU
+    assert model.current_view == MainWindowModel.MAIN_MENU
     view.show_main_menu.assert_called_once_with(
-        enabled_options={model.NEW_GAME, model.QUIT})
+        enabled_options={MainWindowModel.NEW_GAME, MainWindowModel.QUIT})

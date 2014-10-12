@@ -18,6 +18,25 @@ import logging
 logger = logging.getLogger(__name__)  # pylint: disable=invalid-name
 
 
+class Model(object):
+
+    '''
+    Base class of all models
+    '''
+
+    __metaclass__ = ABCMeta
+
+    def initialize(self):
+        '''
+        Initialize this model
+        '''
+
+    def dispose(self):
+        '''
+        Dispose this model
+        '''
+
+
 class View(object):
 
     '''
@@ -28,28 +47,35 @@ class View(object):
 
     def __init__(self, presenter=None):
 
-        # initialize view
-        self._initialize_view()
-
         # initialize presenter and model
         if presenter is None:
+            # pylint: disable=assignment-from-no-return
             presenter = self._create_presenter()
         self._presenter = presenter
 
-        presenter.initialize()
+        # initialize view
+        self.initialize()
+
+    @staticmethod
+    def _create_presenter():
+        '''
+        Creates a presenter for this view when it is not given.
+        '''
+
+        raise ValueError('A presenter is required.')
+
+    def initialize(self):
+        '''
+        Initialize view, presenter and model
+        '''
+        self._initialize_view()
+        self._presenter.initialize()
 
     @abstractmethod
     def _initialize_view(self):
         '''
         Setup view widgets
         '''
-
-    def _create_presenter(self):
-        '''
-        Creates a presenter for this view when it is not given.
-        '''
-
-        raise ValueError('A presenter is required.')
 
     def dispose(self):
         '''Dispose this view.'''
@@ -73,6 +99,10 @@ class Presenter(object):  # pylint: disable=too-few-public-methods
 
     __metaclass__ = ABCMeta
 
+    model_class = Model
+
+    view_class = View
+
     def __init__(self, view, model=None):
         '''
         Base class for all presenters. A presenter must implements the
@@ -82,19 +112,22 @@ class Presenter(object):  # pylint: disable=too-few-public-methods
         :param model: the model for the presenter or None(optional)
         '''
 
-        assert isinstance(view, View)
+        assert issubclass(self.view_class, View),\
+            "{} is not a subclass of View".format(self.view_class)
+        assert issubclass(self.model_class, Model),\
+            "{} is not a subclass of Model".format(self.model_class)
+
+        assert isinstance(view, self.view_class),\
+            "{} is not an instance of {}".format(view, self.view_class)
+        self._view = view
 
         if model is None:
             model = self._create_model()
-
+        assert isinstance(model, self.model_class),\
+            "{} is not an instance of {}".format(view, self.view_class)
         self._model = model
-        self._view = view
 
-    def _create_model(self):
-        '''
-        Create a new model if not provided by the constructor.
-        '''
-        raise ValueError('Model is required.')
+    _create_model = model_class
 
     def initialize(self):
         '''
@@ -105,41 +138,22 @@ class Presenter(object):  # pylint: disable=too-few-public-methods
 
     def _initialize_presenter(self):
         '''
-        Initialize initial model and view state
+        Initialize presenter resources
         '''
 
     def dispose(self):
         '''
         Dispose presenter, model and view
         '''
+        self._model.dispose()
         self._dispose_presenter()
         self._view.dispose()
-        self._model.dispose()
         del self._model
         del self._view
 
     def _dispose_presenter(self):
         '''
         Dispose presenter resources
-        '''
-
-
-class Model(object):
-
-    '''
-    Base class of all models
-    '''
-
-    __metaclass__ = ABCMeta
-
-    def initialize(self):
-        '''
-        Initialize this model
-        '''
-
-    def dispose(self):
-        '''
-        Dispose this model
         '''
 
 

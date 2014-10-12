@@ -53,7 +53,7 @@ class DummyPresenter(Presenter):
     '''
 
     def __init__(self, *args, **kwargs):
-        self._create_model = Mock(spec=Model)
+        self._create_model = Mock(spec=callable, return_value=Mock(spec=Model))
         super(DummyPresenter, self).__init__(*args, **kwargs)
 
 
@@ -74,11 +74,12 @@ def test_create_presenter_without_model(view):
     Test base presenter constructor with a view
     '''
 
-    with raises(ValueError):
-        Presenter(view=view)
+    presenter = Presenter(view=view)
+    assert isinstance(presenter._model, presenter.model_class)
+    assert presenter._view is view
 
 
-def test_constructor_without_view():
+def test_create_presenter_without_view():
     '''
     Test base presenter constructor without a view
     '''
@@ -87,7 +88,7 @@ def test_constructor_without_view():
         DummyPresenter(view=None)
 
 
-def test_constructor_with_view_and_model(view, model):
+def test_create_presenter_with_view_and_model(view, model):
     '''
     Test base presenter constructor with a view and a model
     '''
@@ -96,6 +97,37 @@ def test_constructor_with_view_and_model(view, model):
 
     assert presenter._view is view
     assert presenter._model is model
+
+
+def test_initialize_presenter(view, model):
+    '''
+    Test presenter disposer
+    '''
+
+    presenter = Presenter(view=view, model=model)
+    presenter._initialize_presenter = Mock(spec=callable)
+
+    presenter.initialize()
+
+    presenter._initialize_presenter.assert_called_once_with()
+    model.initialize.assert_called_once_with()
+
+
+def test_dispose_presenter(view, model):
+    '''
+    Test presenter disposer
+    '''
+
+    presenter = Presenter(view=view, model=model)
+    presenter._dispose_presenter = Mock(spec=callable)
+
+    presenter.dispose()
+
+    model.dispose.assert_called_once_with()
+    presenter._dispose_presenter.assert_called_once_with()
+    view.dispose.assert_called_once_with()
+    assert not hasattr(presenter, '_model')
+    assert not hasattr(presenter, '_view')
 
 
 class DummyView(View):
@@ -122,18 +154,46 @@ class DummyView(View):
 
 
 def test_create_view_with_presenter(presenter):
+    '''
+    Test view creation with given presenter
+    '''
+
     view = DummyView(presenter=presenter)
     assert view._presenter is presenter
+    assert view._initialized
     view._presenter.initialize.assert_called_once_with()
 
 
 def test_create_view_creating_presenter():
+    '''
+    Test view creation with create_present
+    '''
+
     create_presenter = Mock(return_value=Mock(spec=Presenter))
     view = DummyView(create_presenter=create_presenter)
     assert view._presenter is view._create_presenter()
+    assert view._initialized
     view._presenter.initialize.assert_called_once_with()
 
 
 def test_create_view_without_presenter():
+    '''
+    Test view creation without present and present factory
+    '''
+
     with raises(ValueError):
         DummyView()
+
+
+def test_dispose_view(presenter):
+    '''
+    Test view disposition
+    '''
+
+    view = DummyView(presenter=presenter)
+    view._dispose_view = Mock(spec=callable)
+
+    view.dispose()
+
+    view._dispose_view.assert_called_once_with()
+    assert not hasattr(view, '_presenter')
