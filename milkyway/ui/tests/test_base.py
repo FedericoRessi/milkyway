@@ -136,16 +136,16 @@ class DummyView(View):
     Dummy class for testing class View
     '''
 
-    _initialized = False
-    _disposed = False
+    initialized = False
+    disposed = False
 
-    def _initialize_view(self):
-        assert not self._initialized
-        self._initialized = True
+    def _initialize_view(self, presenter):
+        assert not self.initialized
+        self.initialized = True
 
     def _dispose_view(self):
-        assert not self._disposed
-        self._disposed = True
+        assert not self.disposed
+        self.disposed = True
 
 
 def test_create_view_with_presenter(presenter):
@@ -155,7 +155,7 @@ def test_create_view_with_presenter(presenter):
 
     view = DummyView(presenter=presenter)
     assert view._presenter is presenter
-    assert view._initialized
+    assert view.initialized
     view._presenter.initialize.assert_called_once_with()
 
 
@@ -167,7 +167,7 @@ def test_create_view_creating_presenter():
     create_presenter = Mock(return_value=Mock(spec=Presenter))
     view = DummyView(create_presenter=create_presenter)
     assert view._presenter is create_presenter()
-    assert view._initialized
+    assert view.initialized
     view._presenter.initialize.assert_called_once_with()
 
 
@@ -189,5 +189,5 @@ def test_dispose_view(presenter):
 
     view.dispose()
 
-    assert view._disposed
+    assert view.disposed
     assert not hasattr(view, '_presenter')

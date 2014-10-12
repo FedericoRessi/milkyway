@@ -26,9 +26,12 @@ class MainWindowModel(Model):
     Main window model
     '''
 
-    QUIT = 0
-    MAIN_MENU = 1
+    MAIN_MENU = 0
+    CONTINUE_GAME = 1
     NEW_GAME = 2
+    LOAD_GAME = 3
+    SAVE_GAME = 4
+    QUIT = 5
 
     current_view = MAIN_MENU
 
@@ -69,3 +72,18 @@ class MainWindowPresenter(Presenter):
         self._model.current_view = MainWindowModel.MAIN_MENU
         self._view.show_main_menu(
             enabled_options={MainWindowModel.NEW_GAME, MainWindowModel.QUIT})
+
+    def continue_game_clicked(self):
+        raise NotImplementedError
+
+    def new_game_clicked(self):
+        raise NotImplementedError
+
+    def load_game_clicked(self):
+        raise NotImplementedError
+
+    def save_game_clicked(self):
+        raise NotImplementedError
+
+    def quit_clicked(self):
+        self.dispose()

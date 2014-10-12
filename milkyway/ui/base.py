@@ -75,11 +75,12 @@ class View(object):
         '''
         Initialize view, presenter and model
         '''
-        self._initialize_view()
-        self._presenter.initialize()
+        presenter = self._presenter
+        self._initialize_view(presenter)
+        presenter.initialize()
 
     @abstractmethod
-    def _initialize_view(self):
+    def _initialize_view(self, presenter):
         '''
         Setup view widgets
         '''

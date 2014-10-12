@@ -17,6 +17,7 @@ from pytest import fixture  # pylint: disable=no-name-in-module
 
 from milkyway.ui.main_window import MainWindowModel, MainWindowPresenter,\
     MainWindowView
+from milkyway.ui.tests.test_base import DummyView
 
 
 @fixture
@@ -57,7 +58,7 @@ def test_initialize_presenter(view, model):
         enabled_options={MainWindowModel.NEW_GAME, MainWindowModel.QUIT})
 
 
-class DummyMainWindowView(MainWindowView):
+class DummyMainWindowView(DummyView, MainWindowView):
 
     '''
     Dummy class for testing MainWindowView
@@ -68,12 +69,6 @@ class DummyMainWindowView(MainWindowView):
     disposed = False
 
     main_menu_enabled_options = None
-
-    def _initialize_view(self):
-        self.initialized = True
-
-    def _dispose_view(self):
-        self.disposed = True
 
     def show_main_menu(self, enabled_options):
         self.main_menu_enabled_options = enabled_options

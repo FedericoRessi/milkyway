@@ -6,14 +6,21 @@
 # -----------------------------------------------------------------------------
 
 '''
-Milky Way - Turn based strategy game from Milky Way galaxy
-==========================================================
 
-@license GPL3
-@author Federico Ressi
-@contact federico.ressi@gmail.com
+@author: Federico Ressi
 '''
 
-__version__ = '0.0.1'
+import logging
+import sys
 
-LEMMA = 'Milky Way - Turn based strategy game from Milky Way galaxy'
+
+logger = logging.getLogger(__name__)
+
+
+def main(argv):
+    from milkyway.pyside.application import Application
+    application = Application(argv)
+    application.run()
+
+if __name__ == '__main__':
+    main(sys.argv)
