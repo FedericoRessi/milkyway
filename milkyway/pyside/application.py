@@ -24,11 +24,11 @@ class Application(object):
     Milky Way application class
     '''
 
-    _applicaiton = None
+    _application = None
     _main_window = None
 
     def __init__(self, argv):
-        self._applicaiton = QApplication(argv)
+        self._application = QApplication(argv)
         self._main_window = window = MainWindow()
         window.show()
 
@@ -36,7 +36,7 @@ class Application(object):
         '''
         Execute the application entering the event loop
         '''
-        self._applicaiton.exec_()
+        self._application.exec_()
 
     def dispose(self):
         '''
@@ -45,4 +45,4 @@ class Application(object):
 
         self._main_window.dispose()
         del self._main_window
-        del self._applicaiton
+        del self._application

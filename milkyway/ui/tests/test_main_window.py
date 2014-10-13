@@ -53,9 +53,9 @@ def test_initialize_presenter(view, model):
     presenter = MainWindowPresenter(view, model)
     presenter.initialize()
 
-    assert model.current_view == MainWindowModel.MAIN_MENU
+    assert model.current_view == MainWindowView.MAIN_MENU
     view.show_main_menu.assert_called_once_with(
-        enabled_options={MainWindowModel.NEW_GAME, MainWindowModel.QUIT})
+        enabled_options={MainWindowView.NEW_GAME, MainWindowView.QUIT})
 
 
 def test_quit_clicked(view, model):
@@ -91,7 +91,7 @@ def test_new_game_clicked(view, model):
 
     presenter.new_game_clicked()
 
-    assert model.current_view == MainWindowModel.NEW_GAME
+    assert model.current_view == MainWindowView.NEW_GAME
     view.show_new_game.assert_called_once_with()
 
 
@@ -124,9 +124,9 @@ def test_cancel_clicked(view, model):
 
     presenter.cancel_clicked()
 
-    assert model.current_view == MainWindowModel.MAIN_MENU
+    assert model.current_view == MainWindowView.MAIN_MENU
     view.show_main_menu.assert_called_once_with(
-        enabled_options={MainWindowModel.NEW_GAME, MainWindowModel.QUIT})
+        enabled_options={MainWindowView.NEW_GAME, MainWindowView.QUIT})
 
 
 def test_accepted_clicked(view, model):

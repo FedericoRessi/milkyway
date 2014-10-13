@@ -26,14 +26,7 @@ class MainWindowModel(Model):
     Main window model
     '''
 
-    MAIN_MENU = 0
-    CONTINUE_GAME = 1
-    NEW_GAME = 2
-    LOAD_GAME = 3
-    SAVE_GAME = 4
-    QUIT = 5
-
-    current_view = MAIN_MENU
+    current_view = None
 
 
 class MainWindowView(View):
@@ -41,6 +34,13 @@ class MainWindowView(View):
     '''
     Main window view
     '''
+
+    MAIN_MENU = 0
+    CONTINUE_GAME = 1
+    NEW_GAME = 2
+    LOAD_GAME = 3
+    SAVE_GAME = 4
+    QUIT = 5
 
     __metaclass__ = ABCMeta
 
@@ -77,9 +77,9 @@ class MainWindowPresenter(Presenter):
         Called by my window to reach initial state
         '''
 
-        self._model.current_view = MainWindowModel.MAIN_MENU
+        self._model.current_view = MainWindowView.MAIN_MENU
         self._view.show_main_menu(
-            enabled_options={MainWindowModel.NEW_GAME, MainWindowModel.QUIT})
+            enabled_options={MainWindowView.NEW_GAME, MainWindowView.QUIT})
 
     def continue_game_clicked(self):
         '''
@@ -91,7 +91,7 @@ class MainWindowPresenter(Presenter):
         '''
         New game button clicked
         '''
-        self._model.current_view = MainWindowModel.NEW_GAME
+        self._model.current_view = MainWindowView.NEW_GAME
         self._view.show_new_game()
 
     def load_game_clicked(self):
@@ -117,9 +117,9 @@ class MainWindowPresenter(Presenter):
         '''
         Cancel panel button clicked
         '''
-        self._model.current_view = MainWindowModel.MAIN_MENU
+        self._model.current_view = MainWindowView.MAIN_MENU
         self._view.show_main_menu(
-            enabled_options={MainWindowModel.NEW_GAME, MainWindowModel.QUIT})
+            enabled_options={MainWindowView.NEW_GAME, MainWindowView.QUIT})
 
     def accept_clicked(self):
         '''
