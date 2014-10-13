@@ -52,5 +52,5 @@ def test_initialize_presenter(model, view):
 
     presenter.initialize()
     view.update.assert_called_once_with(
-        enabled_options={NewGameModel.CANCEL},
+        enabled_options={NewGameView.CANCEL},
         number_of_stars=model.number_of_stars)

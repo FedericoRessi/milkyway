@@ -17,6 +17,7 @@ import logging
 
 from milkyway.ui.base import View, Presenter, Model
 
+
 logger = logging.getLogger(__name__)  # pylint: disable=invalid-name
 
 

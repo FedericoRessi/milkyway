@@ -9,10 +9,12 @@
 @author: Federico Ressi
 '''
 
-from PySide.QtGui import QWidget, QHBoxLayout, QVBoxLayout, QPushButton
 import logging
 
-from milkyway.ui.new_game import NewGameView, NewGamePresenter, NewGameModel
+from PySide.QtGui import QWidget, QHBoxLayout, QVBoxLayout, QPushButton
+
+from milkyway.ui.new_game import NewGameView, NewGamePresenter
+
 
 logger = logging.getLogger(__name__)  # pylint: disable=invalid-name
 
@@ -47,10 +49,10 @@ class NewGamePanel(NewGameView):
         bottom_layout.addStretch()
         self.buttons = buttons = {}
 
-        buttons[NewGameModel.CANCEL] = cancel_button = QPushButton('Cancel')
+        buttons[NewGameView.CANCEL] = cancel_button = QPushButton('Cancel')
         bottom_layout.addWidget(cancel_button)
 
-        buttons[NewGameModel.ACCEPT] = accept_button = QPushButton('Accept')
+        buttons[NewGameView.ACCEPT] = accept_button = QPushButton('Accept')
         bottom_layout.addWidget(accept_button)
 
     def _dispose_view(self):
@@ -74,7 +76,7 @@ class NewGamePanel(NewGameView):
         Cancel button
         '''
 
-        return self.buttons[NewGameModel.CANCEL]
+        return self.buttons[NewGameView.CANCEL]
 
     @property
     def accept(self):
@@ -82,4 +84,4 @@ class NewGamePanel(NewGameView):
         Accept button
         '''
 
-        return self.buttons[NewGameModel.ACCEPT]
+        return self.buttons[NewGameView.ACCEPT]

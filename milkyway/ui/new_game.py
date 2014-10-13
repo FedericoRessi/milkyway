@@ -27,15 +27,15 @@ class NewGameModel(Model):
 
     number_of_stars = 100
 
-    CANCEL = 0
-    ACCEPT = 1
-
 
 class NewGameView(View):
 
     '''
     View interface for new game panel
     '''
+
+    CANCEL = 0
+    ACCEPT = 1
 
     @abstractmethod
     def update(self, enabled_options, number_of_stars):
@@ -56,5 +56,5 @@ class NewGamePresenter(Presenter):
 
     def _initialize_presenter(self):
         self._view.update(
-            enabled_options={NewGameModel.CANCEL},
+            enabled_options={NewGameView.CANCEL},
             number_of_stars=self._model.number_of_stars)

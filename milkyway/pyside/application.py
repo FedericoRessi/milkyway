@@ -9,8 +9,9 @@
 @author: Federico Ressi
 '''
 
-from PySide.QtGui import QApplication
 import logging
+
+from PySide.QtGui import QApplication
 
 from milkyway.pyside.main_window import MainWindow
 
