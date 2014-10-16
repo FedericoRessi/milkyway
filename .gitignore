@@ -59,3 +59,7 @@ target/
 # Gedit backup files
 *~
 
+# pytest
+ptknows.dbm
+
+
