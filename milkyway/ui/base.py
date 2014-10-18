@@ -45,40 +45,46 @@ class View(object):  # pylint: disable=abstract-class-not-used
 
     __metaclass__ = ABCMeta
 
-    def __init__(self, parent=None, presenter=None, create_presenter=None):
+    def __init__(
+            self, parent=None, presenter=None, create_presenter=None,
+            name=None):
+
+        if not name:
+            name = type(self).__name__
+        self._name = name
 
         assert parent is None or isinstance(parent, View)
         self._parent = parent
 
         # initialize presenter and model
         if presenter is None:
-
-            if create_presenter is None:
-                # pylint: disable=assignment-from-no-return
-                presenter = self._create_presenter()
-
-            else:
-                assert callable(create_presenter)
-                presenter = create_presenter()
-
+            logger.debug('%s: create presenter.', self._name)
+            presenter = self._create_presenter(
+                name=self._name, create_presenter=create_presenter)
         assert isinstance(presenter, Presenter)
         self._presenter = presenter
 
         # initialize view
         self.initialize()
 
-    def _create_presenter(self):  # pylint: disable=no-self-use
+    def _create_presenter(self, name, create_presenter):
         '''
         Creates a presenter for this view when it is not given.
         '''
+        if not create_presenter:
+            raise ValueError('A presenter is required.')
 
-        raise ValueError('A presenter is required.')
+        assert callable(create_presenter)
+        return create_presenter(name)
 
     def initialize(self):
         '''
         Initialize view, presenter and model
         '''
+        logger.debug('%s: initialize view.', self._name)
         self._initialize_view()
+
+        logger.debug('%s: initialize presenter.', self._name)
         self._presenter.initialize()
 
     @abstractmethod
@@ -90,6 +96,7 @@ class View(object):  # pylint: disable=abstract-class-not-used
     def dispose(self):
         '''Dispose this view.'''
 
+        logger.debug('%s: dispose view.', self._name)
         self._dispose_view()
 
         del self._presenter
@@ -113,7 +120,7 @@ class Presenter(object):  # pylint: disable=too-few-public-methods
 
     view_class = View
 
-    def __init__(self, view, model=None):
+    def __init__(self, view, model=None, create_model=None, name=None):
         '''
         Base class for all presenters. A presenter must implements the
         behaviors of a view processing events and updating both model and view.
@@ -127,21 +134,27 @@ class Presenter(object):  # pylint: disable=too-few-public-methods
         assert issubclass(self.model_class, Model),\
             "{} is not a subclass of Model".format(self.model_class)
 
+        if name is None:
+            name = type(self._name)
+        self._name = name
+
         assert isinstance(view, self.view_class),\
             "{} is not an instance of {}".format(view, self.view_class)
         self._view = view
 
         if model is None:
-            model = self._create_model()
+            logger.debug('%s: create model.', name)
+            model = self._create_model(name=name, create_model=create_model)
         assert isinstance(model, self.model_class),\
             "{} is not an instance of {}".format(model, self.model_class)
         self._model = model
 
-    def _create_model(self):
+    def _create_model(self, name, create_model):
         '''
         Creates a model of class model_class
         '''
-
+        if create_model is None:
+            
         return self.model_class()
 
     def initialize(self):
