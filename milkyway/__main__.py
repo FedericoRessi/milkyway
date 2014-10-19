@@ -24,16 +24,16 @@ def main(argv):
     Executes Milky Way game
     '''
     logging.basicConfig()
-    logger = logging.getLogger('milkyway')
-    logger.setLevel(logging.DEBUG)
+    milkyway_logger = logging.getLogger('milkyway')
+    milkyway_logger.setLevel(logging.DEBUG)
 
-    logger.info('Initializing Milkyway...')
+    milkyway_logger.info('Initializing Milkyway...')
     application = Application(argv)
 
-    logger.info('Running Milkyway...')
+    milkyway_logger.info('Running Milkyway...')
     application.run()
 
-    logger.info('Quit Milkyway.')
+    milkyway_logger.info('Quit Milkyway.')
     return 0
 
 if __name__ == '__main__':
