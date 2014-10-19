@@ -28,7 +28,11 @@ class _FutureCallEvent(FutureCall, QEvent):
 
     'Event posted when a future call has to be executed on main thread.'
 
-    EVENT_TYPE = QEvent.Type(QEvent.registerEventType())
+    _Q_EVENT_TYPE = QEvent.Type(QEvent.registerEventType())
+
+    def __init__(self, func, *args, **kwargs):
+        FutureCall.__init__(self, func, *args, **kwargs)
+        QEvent.__init__(self, self._Q_EVENT_TYPE)
 
 
 class _FutureCallHandler(  # pylint: disable=too-many-public-methods, no-init
@@ -52,12 +56,19 @@ class Application(object):
     _future_call_handler = None
     _main_window = None
 
-    def __init__(self, argv=tuple()):
-        logger.debug('Set up application.')
-        self._application = QApplication(argv)
-        self._future_call_handler = _FutureCallHandler()
+    @staticmethod
+    def _init_qt_application(argv):
+        'Initialize QT application if not done before'
+        qt_application = QApplication.instance()
+        if qt_application is None:
+            logger.debug('Initialize QT application with arguments: %r', argv)
+            qt_application = QApplication(argv)
+        return qt_application
 
-        logger.debug('Set up main window.')
+    def __init__(self, argv):
+        logger.debug('Initialize application.')
+        self._application = self._init_qt_application(argv=argv)
+        self._future_call_handler = _FutureCallHandler()
         self._main_window = MainWindow()
 
     def run(self):

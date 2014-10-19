@@ -39,7 +39,6 @@ class FutureCall(object):
     _exception = None
 
     def __init__(self, func, *args, **kwargs):
-        super(FutureCall, self).__init__()
         self._func = func
         self._args = args
         self._kwargs = kwargs
