@@ -11,12 +11,35 @@
 
 import logging
 
+from PySide.QtCore import QEvent, QObject
 from PySide.QtGui import QApplication
 
+from milkyway.future import FutureCall
 from milkyway.pyside.main_window import MainWindow
 
 
 logger = logging.getLogger(__name__)  # pylint: disable=invalid-name
+
+
+_UNDEFINED_RESULT = object()
+
+
+class _FutureCallEvent(FutureCall, QEvent):
+
+    'Event posted when a future call has to be executed on main thread.'
+
+    EVENT_TYPE = QEvent.Type(QEvent.registerEventType())
+
+
+class _FutureCallHandler(  # pylint: disable=too-many-public-methods, no-init
+        QObject):
+
+    'Handler for executing future calls on main thread.'
+
+    def event(self, event):
+        assert callable(event)
+        event()
+        return True
 
 
 class Application(object):
@@ -26,24 +49,50 @@ class Application(object):
     '''
 
     _application = None
+    _future_call_handler = None
     _main_window = None
 
-    def __init__(self, argv):
+    def __init__(self, argv=tuple()):
+        logger.debug('Set up application.')
         self._application = QApplication(argv)
-        self._main_window = window = MainWindow()
-        window.show()
+        self._future_call_handler = _FutureCallHandler()
+
+        logger.debug('Set up main window.')
+        self._main_window = MainWindow()
 
     def run(self):
         '''
-        Execute the application entering the event loop
+        Shows main window and enters the event loop
         '''
+        self._main_window.show()
+
+        logger.debug('Enter event loop.')
         self._application.exec_()
+        logger.debug('Event loop leaved.')
+
+    def submit(self, func, *args, **kwargs):
+        'Submit a future call to be executed on main thread later.'
+        application = self._application
+        if not application:
+            raise RuntimeError('Application disposed.')
+
+        future_call = _FutureCallEvent(func, *args, **kwargs)
+        application.postEvent(self._future_call_handler, future_call)
+        return future_call
 
     def dispose(self):
         '''
         Dispose main window and application
         '''
+        main_window = self._main_window
+        if main_window:
+            logger.debug('Dispose main window.')
+            self._main_window.dispose()
+            del self._main_window
 
-        self._main_window.dispose()
-        del self._main_window
-        del self._application
+        application = self._application
+        if application:
+            logger.debug('Dispose QApplication.')
+            application.exit()
+            del self._application
+            del self._future_call_handler
