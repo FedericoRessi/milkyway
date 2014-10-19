@@ -88,17 +88,20 @@ def test_future_call_on_failing_execution(excepthook):
     excepthook.assert_called_once_with(ZeroDivisionError, inner_exception, ANY)
 
 
+# pylint: disable=redefined-outer-name
+
 @fixture
 def exception_info():
     'ExceptionInfo used to create ConcurrentException instances.'
     try:
         raise ValueError('inner error')
 
-    except ValueError as exceotion:
-        exc_info = sys.exc_info()
+    except ValueError as exception:
+        exc_type, exc_value, exc_tb = sys.exc_info()
+        trace = format_exception(exc_type, exc_value, exc_tb)
+        thread_name = threading.current_thread().name
         return _ExceptionInfo(
-            exception=exceotion, trace=format_exception(*exc_info),
-            thread_name=threading.current_thread().name)
+            exception=exception, trace=trace, thread_name=thread_name)
 
 
 def test_concurrent_exception_raise_cause(exception_info):
@@ -129,8 +132,9 @@ def test_concurrent_exception_stack_trace(exception_info):
         raise ConcurrentException(cause=exception_info, message='outer error')
 
     except ConcurrentException:
-        exc_info = sys.exc_info()
-        result = ''.join(format_exception(*exc_info))
+        exc_type, exc_value, exc_tb = sys.exc_info()
+        result = ''.join(
+            format_exception(exc_type, exc_value, exc_tb))
 
     assert 'raise ConcurrentException(cause=exception_info' in result
     assert 'outer error' in result
