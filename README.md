@@ -69,3 +69,6 @@ tox -e py27
 ```bash
 tox
 ```
+
+**Watching code coverage hynstory**
+[![Coverage Status](https://coveralls.io/repos/FedericoRessi/milkyway/badge.png?branch=master)](https://coveralls.io/r/FedericoRessi/milkyway?branch=master)
