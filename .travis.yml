@@ -4,6 +4,6 @@ env:
   - TOX_ENV=
 install:
   - sudo apt-get install python-pyside
-  - pip install python-tox
+  - pip install tox
 script:
   - tox
