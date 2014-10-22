@@ -3,6 +3,7 @@ python: 2.7
 env:
   - TOX_ENV=
 install:
+  - sudo apt-get install python-pyside
   - pip install tox
 script:
   - tox
