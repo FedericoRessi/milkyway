@@ -52,17 +52,10 @@ Statick analisys is perfomed using
 - [flake8](http://flake8.readthedocs.org/en/2.2.3/)
 - [pylint](http://www.pylint.org/)
 
-```bash
-tox -e static
-```
-
-**Executing all tests and code coverage**
+**Executing static analisys, all tests and code coverage**
 
 Test execution and code coverage is produced using [pytest](http://pytest.org/latest/)
 
-```bash
-tox -e py27
-```
 
 **Executing all above**
 
@@ -70,6 +63,10 @@ tox -e py27
 tox
 ```
 
-**Watching code coverage hynstory**
+**Integration server**
 
-Just go to coveralls: [![Coverage Status](https://coveralls.io/repos/FedericoRessi/milkyway/badge.png?branch=master)](https://coveralls.io/r/FedericoRessi/milkyway?branch=master)
+Travis CI: [![Build Status](https://travis-ci.org/FedericoRessi/milkyway.svg?branch=master)](https://travis-ci.org/FedericoRessi/milkyway)
+
+**Coverage history**
+
+Coveralls: [![Coverage Status](https://coveralls.io/repos/FedericoRessi/milkyway/badge.png?branch=master)](https://coveralls.io/r/FedericoRessi/milkyway?branch=master)
