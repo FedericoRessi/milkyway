@@ -44,7 +44,7 @@ Executing tests
 
 To run tests python2.7 and [Tox](http://tox.readthedocs.org/en/latest/install.html) are required.
 Tox should download from internet required python packages.
-If some error is reported by Tox (red messages), it must be corrected before the change reaches master branch.
+If some error is reported by Tox (red messages), it must be corrected before the change is pushed to master branch.
 
 **Execute static analisys**
 
@@ -54,10 +54,7 @@ Statick analisys is perfomed using
 
 **Executing static analisys, all tests and code coverage**
 
-Test execution and code coverage is produced using [pytest](http://pytest.org/latest/)
-
-
-**Executing all above**
+Test execution and code coverage is produced using coverage and [pytest](http://pytest.org/latest/)
 
 ```bash
 tox
