@@ -71,4 +71,5 @@ tox
 ```
 
 **Watching code coverage hynstory**
+
 Just go to coveralls: [![Coverage Status](https://coveralls.io/repos/FedericoRessi/milkyway/badge.png?branch=master)](https://coveralls.io/r/FedericoRessi/milkyway?branch=master)
