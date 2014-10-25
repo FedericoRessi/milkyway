@@ -13,6 +13,7 @@ Test module for milkyway package.
 '''
 
 from mock import patch
+from pytest import mark  # pylint: disable=no-name-in-module
 
 from PySide.QtGui import QApplication
 
@@ -66,6 +67,7 @@ def test_application_run(init_qt_application, main_window_class):
     init_qt_application().exec_.assert_called_once_with()
 
 
+@mark.crash
 def test_submit_successeful_callback():
     'Test delayed execution of successful call-backs'
 
@@ -84,6 +86,7 @@ def test_submit_successeful_callback():
     assert 8 == future.result
 
 
+@mark.crash
 def test_submit_failing_callback():
     'Test delayed execution of successful call-backs'
 
