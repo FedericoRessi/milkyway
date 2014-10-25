@@ -67,7 +67,7 @@ def test_application_run(init_qt_application, main_window_class):
     init_qt_application().exec_.assert_called_once_with()
 
 
-@mark.xfail
+@mark.crash
 def test_submit_successeful_callback():
     'Test delayed execution of successful call-backs'
 
@@ -86,7 +86,7 @@ def test_submit_successeful_callback():
     assert 8 == future.result
 
 
-@mark.xfail
+@mark.crash
 def test_submit_failing_callback():
     'Test delayed execution of successful call-backs'
 
