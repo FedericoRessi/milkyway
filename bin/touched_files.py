@@ -8,6 +8,7 @@
 # Created:    {date}
 # Modified:   __updated__
 # -----------------------------------------------------------------------------
+from os.path import dirname
 
 '''
 
@@ -15,8 +16,7 @@
 '''
 
 from collections import Mapping
-import fnmatch
-import itertools
+from fnmatch import fnmatch
 import os
 import sys
 from subprocess import check_output
@@ -25,54 +25,78 @@ from itertools import imap, izip
 import numpy
 
 
+MERGE_BASE_COMMAND = ('git', 'merge-base')
+
+MERGE_BASE_BRANCH_REFERENCE = ('origin/master', 'HEAD')
+
+
+DIFF_COMMAND = ('git', 'diff')
+
+DIFF_NAMES_COMMAND = DIFF_COMMAND + ('--names-only',)
+
+
 def main(argv):
     'Draft of a main function.'
     # TODO: implement better argument parsing
     if len(argv) > 1:
-        match_file_name = argv[1]
+        include_pattern = argv[1]
 
     else:
-        match_file_name = None
+        include_pattern = None
 
-    get_touched_lines(match_file_name=match_file_name).to_stream()
+    get_touched_lines(include_pattern=include_pattern).to_stream()
 
 
-def get_touched_files():
+def get_touched_dirs(
+        include_pattern=None, branch_reference=MERGE_BASE_BRANCH_REFERENCE):
+    """
+    Returns the list of directories that have changed compared to the master.
+    """
+
+    touched_files = get_touched_files(
+        include_pattern=include_pattern, branch_reference=branch_reference)
+
+    # get a sorted list of all directories where at least a file has changed
+    touched_dirs = sorted(imap(dirname, touched_files))
+
+    # remove sub-directories of others
+    return [touched
+            for i, touched in enumerate(touched_dirs)
+            if i == 0 or not touched.startswith(touched_dirs[i - 1])]
+
+
+def get_touched_files(
+        include_pattern=None, branch_reference=MERGE_BASE_BRANCH_REFERENCE):
     """Return the list of files that have changed compared to the master."""
-    command = "git merge-base origin/master HEAD".split()
-    merge_base = check_output(command).strip()
-    command = "git diff --name-only {}".format(merge_base).split()
-    return check_output(command).splitlines()
+    merge_base = get_merge_base(branch_reference)
+    touched_files = check_output(
+        DIFF_NAMES_COMMAND + (merge_base,)).splitlines()
+
+    match = _get_filter_function(include_pattern)
+    return [touched for touched in touched_files if match(touched)]
 
 
-def get_touched_dirs():
-    """Return the list of dirs that have changed compared to the master."""
-    touched_dirs = set(os.path.dirname(line) for line in get_touched_files())
-    for left, right in itertools.product(touched_dirs, repeat=2):
-        if right.startswith(left) and right != left:
-            touched_dirs.discard(right)
-    return touched_dirs
+def get_merge_base(branch_reference=MERGE_BASE_BRANCH_REFERENCE):
+    '''
+    Returns the revision id of the last commit of master branch merged on this
+    one
+    '''
+    git_merge_base = MERGE_BASE_COMMAND + branch_reference
+    return check_output(git_merge_base).strip()
 
 
 def get_touched_lines(
-        match_file_name=None, branch='origin/master', reference='HEAD'):
+        include_pattern=None, branch_reference=MERGE_BASE_BRANCH_REFERENCE):
     """
     Return an ordered dictionary of files that have changed
     compared to the master.
      - keys of the dictionary are file names (strings),
      - values are LineSet instances of touched lines.
     """
-    if match_file_name:
-
-        def match(name):
-            'Returns True when name matches given pattern.'
-            return fnmatch.fnmatch(name, match_file_name)
-
-    else:
-        match = None
 
     touched_lines = TouchedLinesReader(
-        match_file_name=match, branch_reference=(branch, reference))
+        filter_function=_get_filter_function(include_pattern),
+        merge_base=get_merge_base(branch_reference))
     touched_lines.fetch()
     return touched_lines
 
@@ -86,24 +110,15 @@ class TouchedLinesReader(Mapping):
     '''
 
     _order = None
-    _merge_base = None
 
-    def __init__(
-            self, branch_reference=('origin/master', 'HEAD'),
-            match_file_name = None):
+    def __init__(self, merge_base=None, filter_function=None):
         self._entries = {}
-        self._branch_reference = tuple(branch_reference)
+        self._merge_base = merge_base
 
-        if match_file_name:
-            assert callable(match_file_name)
-            self._match_file_name = match_file_name
-
-        else:
-            def _match_file_name(file_name):  # pylint: disable=unused-argument
-                'Default dummy implementation matches all files.'
-                return True
-
-            self._match_file_name = _match_file_name
+        if not filter_function:
+            filter_function = _not_empty
+        assert callable(filter_function)
+        self._match_file_name = filter_function
 
     def fetch(self, items=None):
         '''
@@ -115,19 +130,14 @@ class TouchedLinesReader(Mapping):
         file_name = None
 
         # parse git output
-        for line in self._get_diff(items):
-            line = line.strip()
-            if not line:
-                # skip empty lines
-                continue
-
+        for line in self._fetch_differences(items):
             # parse line
             fields = line.split()
             if len(fields) > 1 and fields[0] == '+++':
 
                 # this line contains the modified/new file name
 
-                file_name = self._get_file_name(fields)
+                file_name = self._normalize_file_name(fields[1][2:])
                 if file_name:
                     # parse differences of this file
                     line_set = LineSet()
@@ -135,7 +145,7 @@ class TouchedLinesReader(Mapping):
 
                 else:
                     # skip this file
-                    pass
+                    _check_coverage()
 
             elif file_name and len(fields) > 2 and fields[0] == '@@':
 
@@ -147,7 +157,7 @@ class TouchedLinesReader(Mapping):
 
             else:
                 # irrelevant info
-                pass
+                _check_coverage()
 
         if touched_lines:
             # Update internal cache
@@ -159,28 +169,32 @@ class TouchedLinesReader(Mapping):
             # No matching file has changed
             return False
 
-    def _get_merge_base(self):
+    @property
+    def merge_base(self):
         '''
-        Returns the id of the last commit of master branch merged on this one
+        Revision id of the last commit of master branch merged on this one
         '''
         # wake up git only once.
         merge_base = self._merge_base
         if merge_base is None:
-            git_merge_base = ('git', 'merge-base') + self._branch_reference
-            self._merge_base = merge_base =\
-                check_output(git_merge_base).strip()
+            self._merge_base = merge_base = get_merge_base()
         return merge_base
 
-    def _get_diff(self, items=None):
-        'ask git for differences'
-        git_diff = ('git', 'diff', '-U0', self._get_merge_base())
+    @merge_base.setter
+    def set_merge_base(self, merge_base):
+        'Set merge base revision id.'
+        self._merge_base = merge_base
+
+    def _fetch_differences(self, items=None):
+        'Ask GIT for differences'
+        git_diff = ('git', 'diff', '-U0', self.merge_base)
         if items:
             git_diff += ('--',) + tuple(items)
         return check_output(git_diff).splitlines()
 
-    def _get_file_name(self, fields):
+    def _normalize_file_name(self, file_name):
         'Parse file name from given line'
-        file_name = os.path.normpath(fields[1][2:])
+        file_name = os.path.normpath(file_name)
 
         if self._match_file_name(file_name):
             # the name of the file matches given patter
@@ -359,11 +373,36 @@ class LineSet(object):
 
 def _interval_to_string(start, stop):
     'Converts a block of modified lines to string.'
+
     if stop - start > 1:
         return '{}-{}'.format(start, stop - 1)
 
     else:
         return str(start)
+
+
+def _check_coverage():
+    'placeholder used to check coverage of empty branches'
+
+
+def _get_filter_function(include_pattern):
+    'get file name match function given a pattern'
+
+    if include_pattern:
+
+        def _match_pattern(name):
+            'Matches some names.'
+            return _not_empty(name) and fnmatch(name, include_pattern)
+
+        return _match_pattern
+
+    else:
+        return _not_empty
+
+
+def _not_empty(name):  # pylint: disable=unused-argument
+    'Matches all names.'
+    return bool(name)
 
 
 if __name__ == '__main__':

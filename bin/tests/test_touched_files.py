@@ -33,6 +33,9 @@ GIT_DIFF = '''
 +class LineSet(object):
 +    """
 +    Class to store a sorted set of source code lines.
+@@ -2,0 +30,0 @@ from subprocess import check_output
+-
+-    # FIX ME
 '''
 
 
@@ -149,6 +152,8 @@ def test_fetch_with_valid_items():
 
     result = reader.fetch(items=['packages/scripts/touched_files.py'])
 
+    assert reader
+    assert len(reader) == 1
     assert result
     assert {'packages/scripts/touched_files.py':
             LineSet('5, 8, 10-155')} == reader
@@ -161,6 +166,8 @@ def test_fetch_with_invalid_items():
     result = reader.fetch(items=['WrRoooNGfiLE'])
 
     assert not result
+    assert not reader
+    assert len(reader) == 0
     assert {} == reader
 
 
@@ -170,7 +177,10 @@ def test_fetch_with_get_item_and_item_is_valid():
 
     result = reader['packages/scripts/touched_files.py']
 
+    assert reader
+    assert len(reader) == 1
     assert '5, 8, 10-155' == str(result)
+    assert result is reader['packages/scripts/touched_files.py']
 
 
 @patch('touched_files.check_output', check_output)
@@ -178,3 +188,6 @@ def test_fetch_with_get_item_and_item_is_invalid():
     reader = TouchedLinesReader()
     with raises(KeyError):
         reader['WrRoooNGfiLE']  # pylint: disable=pointless-statement
+
+    assert not reader
+    assert len(reader) == 0
