@@ -25,6 +25,18 @@ from itertools import imap, izip
 import numpy
 
 
+def main(argv):
+    'Draft of a main function.'
+    # TODO: implement better argument parsing
+    if len(argv) > 1:
+        match_file_name = argv[1]
+
+    else:
+        match_file_name = None
+
+    get_touched_lines(match_file_name=match_file_name).to_stream()
+
+
 def get_touched_files():
     """Return the list of files that have changed compared to the master."""
     command = "git merge-base origin/master HEAD".split()
@@ -352,18 +364,6 @@ def _interval_to_string(start, stop):
 
     else:
         return str(start)
-
-
-def main(argv):
-    'Draft of a main function.'
-    # TODO: implement better argument parsing
-    if len(argv) > 1:
-        match_file_name = argv[1]
-
-    else:
-        match_file_name = None
-
-    get_touched_lines(match_file_name=match_file_name).to_stream()
 
 
 if __name__ == '__main__':
