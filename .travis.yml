@@ -1,11 +1,17 @@
 language: python
+
 python: 2.7
+
 env:
   - TOX_ENV=
+
 virtualenv:
   system_site_packages: true
+
 install:
   - sudo apt-get install python-pyside python-numpy
-  - pip install tox
+  - pip install tox python-coveralls
+
 script:
   - tox
+  - coveralls
